@@ -1,0 +1,53 @@
+pipeline {
+    agent {
+        docker {
+            image 'docker:latest'
+            args '-v /var/run/docker.sock:/var/run/docker.sock -v $HOME/.docker:/root/.docker' // Mount Docker socket and Docker config
+        }
+    }
+
+    environment {
+        DOCKER_CREDENTIALS_ID = 'docker-hub-credentials'
+        DOCKER_IMAGE = 'your-docker-hub-username/backend:latest'
+        DOCKER_BUILD_CONTEXT = 'src/backend' // Specify the directory for Docker build context
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout the repository
+                git branch: 'main', url: 'https://github.com/your-repo.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build the Docker image using the specified directory as build context
+                    sh "docker build -t ${DOCKER_IMAGE} ${DOCKER_BUILD_CONTEXT}"
+                }
+            }
+        }
+
+        // Add more stages as needed
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Push the Docker image to Docker Hub
+                    withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin'
+                        sh 'docker push ${DOCKER_IMAGE}'
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Clean up any left over Docker images
+            sh 'docker rmi ${DOCKER_IMAGE} || true'
+        }
+    }
+}

@@ -31,5 +31,3 @@ def test_ask_question(client):
     assert b"status" in response.data
     assert b"answer" in response.data
 
-    # You can add more assertions based on the expected response data
-docker co
