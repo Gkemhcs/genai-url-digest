@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="text-center mb-4">Ask a Question</h1>
+            <form id="question-form" class="mb-3" action="/get_answer" method="POST">
+                <div class="form-group">
+                    <label for="question-input" class="font-weight-bold">Your Question</label>
+                    {% if question %}
+                    <input type="text" class="form-control form-control-lg" id="question-input" name="question" value="{{ question }}" required>
+                    {% else %}
+                    <input type="text" class="form-control form-control-lg" id="question-input" name="question" placeholder="Enter your question" required>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg btn-block mt-3">Ask</button>
+            </form>
+
+            {% if answer %}
+            <div class="mt-4 p-4 bg-light rounded shadow">
+                <h5 class="font-weight-bold">Answer</h5>
+                <p>{{ answer }}</p>
+            </div>
+            {% endif %}
+
+            {% if sources %}
+            <div class="mt-4 p-4 bg-light rounded shadow">
+                <h5 class="font-weight-bold">Sources</h5>
+                <ul class="list-group list-group-flush">
+                    {% for source in sources %}
+                    <li class="list-group-item">{{ source }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            
+            {% if source %}
+            <div class="mt-4 p-4 bg-light rounded shadow">
+                <h5 class="font-weight-bold">Source</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">{{ source }}</li>
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

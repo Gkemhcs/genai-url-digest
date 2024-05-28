@@ -1,0 +1,5 @@
+- hosts: gcp_master
+  become: yes
+  roles:
+    - jenkins
+    - docker
