@@ -6,7 +6,8 @@ projects:
 filters:
   - status = RUNNING
   - scheduling.automaticRestart = true AND status = RUNNING
-  - labels.ansible=master
+  - labels.ansible=masterate
+  
 keyed_groups:
 - prefix: gcp
   key: labels.ansible

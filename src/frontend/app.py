@@ -107,5 +107,9 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('login'))
 
+@app.route('/health')
+def health():
+    return "I am running", 200
+    
 if __name__ == '__main__':
     app.run(port=5000,host="0.0.0.0")

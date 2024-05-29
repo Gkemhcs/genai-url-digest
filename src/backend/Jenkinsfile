@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'docker:latest'
-            args '-v /var/run/docker.sock:/var/run/docker.sock -v $HOME/.docker:/root/.docker' // Mount Docker socket and Docker config
+            args '--user root -v /var/run/docker.sock:/var/run/docker.sock' 
         }
     }
 
@@ -16,7 +16,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout the repository
-                git branch: 'main', url: 'https://github.com/your-repo.git'
+                git branch: 'main', url: 'https://github.com/Gkemhcs/genai-url-digest.git'
             }
         }
 
@@ -24,28 +24,52 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image using the specified directory as build context
-                    sh "docker build -t ${DOCKER_IMAGE} ${DOCKER_BUILD_CONTEXT}"
+                    sh "docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_BUILD_CONTEXT}"
+                }
+            }
+        }
+         stage('Push Docker Image') {
+            steps {
+                script {
+                  
+
+                    withDockerRegistry(credentialsId: 'docker-hub-credentials') {
+                       
+                         sh "docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}"
+                    }
                 }
             }
         }
 
         // Add more stages as needed
-
-        stage('Push Docker Image') {
+         stage('Install Trivy') {
             steps {
                 script {
-                    // Push the Docker image to Docker Hub
-                    withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                        sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin'
-                        sh 'docker push ${DOCKER_IMAGE}'
-                    }
+                    // Install Trivy
+                    sh '''
+                    apk update
+                    apk add --no-cache wget tar ca-certificates
+                    wget -qO- https://github.com/aquasecurity/trivy/releases/latest/download/trivy_$(uname -s)_$(uname -m).tar.gz | tar zxvf - -C /usr/local/bin
+                    chmod +x /usr/local/bin/trivy
+                    '''
                 }
             }
         }
+
+        stage('Run Trivy Scan') {
+            steps {
+                script {
+                    // Run Trivy scan and generate HTML report
+                    sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report.html ${DOCKER_IMAGE}'
+                }
+            }
+        }
+       
     }
 
     post {
         always {
+            archiveArtifacts artifacts: 'trivy-report.html', allowEmptyArchive: true
             // Clean up any left over Docker images
             sh 'docker rmi ${DOCKER_IMAGE} || true'
         }

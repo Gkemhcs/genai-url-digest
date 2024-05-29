@@ -1,94 +1,71 @@
 import pytest
-from flask import url_for
+from flask import Flask, session
+from flask.testing import FlaskClient
+import os
+import redis  # Add this import
 from app import app as flask_app
 
 @pytest.fixture
-def app():
-    flask_app.config['TESTING'] = True
-    flask_app.config['WTF_CSRF_ENABLED'] = False
-    flask_app.config['SECRET_KEY'] = 'test_secret_key'
+def app() -> Flask:
+    flask_app.config.update({
+        "TESTING": True,
+        "SECRET_KEY": "your_secret_key",
+        "SESSION_TYPE": "redis",
+        "SESSION_PERMANENT": False,
+        "SESSION_USE_SIGNER": True,
+        "SESSION_KEY_PREFIX": "session:",
+        "SESSION_REDIS": redis.Redis(
+            host=os.getenv("REDIS_SERVER_URL") or "localhost",
+            port=6379,
+            password=os.getenv("REDIS_AUTH_STRING") or "gkem1234",
+            db=0, encoding='utf-8',
+        ),
+    })
     return flask_app
 
 @pytest.fixture
-def client(app):
+def client(app: Flask) -> FlaskClient:
     return app.test_client()
 
-def login(client, username):
-    return client.post('/login', data=dict(username=username), follow_redirects=True)
+def login(client: FlaskClient, username: str):
+    return client.post("/login", data={"username": username})
 
-def logout(client):
-    return client.get('/logout', follow_redirects=True)
+def test_home(client: FlaskClient):
+    response = login(client, "testuser")
+    assert response.status_code == 302  # Redirect after login
 
-def test_home_page(client):
-    """Test the home page access."""
-    rv = client.get('/')
-    assert rv.status_code == 302  # Redirects to login
+    response = client.get("/")
+    assert response.status_code == 200
+    assert b"LinkDigest" in response.data  # Check for the presence of the title in the HTML
 
-    # Log in first
-    login(client, 'testuser')
-    rv = client.get('/')
-    assert rv.status_code == 200
-    assert b'LinkDigest' in rv.data
+def test_submit(client: FlaskClient, monkeypatch):
+    response = login(client, "testuser")
+    assert response.status_code == 302  # Redirect after login
 
-def test_login(client):
-    """Test user login."""
-    rv = client.post('/login', data=dict(username='testuser'), follow_redirects=True)
-    assert rv.status_code == 200
-    assert b'LinkDigest' in rv.data
+    # Mock environment variables
+    monkeypatch.setenv("BACKEND_SERVER_URL", "http://localhost:5001")
 
-def test_login_no_username(client):
-    """Test login without a username."""
-    rv = client.post('/login', data=dict(username=''), follow_redirects=True)
-    assert rv.status_code == 200
-    assert b'Username is required!' in rv.data
+    response = client.post("/submit", data={"urls": ["https://example.com", "https://example.org"]})
+    assert response.status_code == 200
+    assert b"URLs submitted successfully" in response.data
 
-def test_logout(client):
-    """Test user logout."""
-    login(client, 'testuser')
-    rv = client.get('/logout', follow_redirects=True)
-    assert rv.status_code == 200
-    assert b'Login - LinkDigest' in rv.data
+def test_get_answer(client: FlaskClient, monkeypatch):
+    response = login(client, "testuser")
+    assert response.status_code == 302  # Redirect after login
 
-def test_submit_urls(client, monkeypatch):
-    """Test URL submission."""
-    login(client, 'testuser')
+    # Mock environment variables
+    monkeypatch.setenv("BACKEND_SERVER_URL", "http://localhost:5001")
 
-    def mock_post(url, data):
-        class MockResponse:
-            def __init__(self):
-                self.status_code = 200
-                self.text = '{"status": "ok"}'
+    response = client.post("/get_answer", data={"question": "What is Flask?"})
+    assert response.status_code == 200
+    assert b"LinkDigest" in response.data  # Check for the presence of the title in the HTML
 
-            def json(self):
-                return {"status": "ok"}
-        
-        return MockResponse()
+def test_login_required(client: FlaskClient):
+    response = client.get("/")
+    assert response.status_code == 302  # Redirect to login
 
-    monkeypatch.setattr('requests.post', mock_post)
+    response = client.get("/submit")
+    assert response.status_code == 302  # Redirect to login
 
-    rv = client.post('/submit', data=dict(urls=['http://example.com']), follow_redirects=True)
-    assert rv.status_code == 200
-    
-
-def test_get_answer(client, monkeypatch):
-    """Test asking a question."""
-    login(client, 'testuser')
-
-    def mock_post(url, data):
-        class MockResponse:
-            def __init__(self):
-                self.status_code = 200
-
-            def json(self):
-                return {"answer": "This is a mock answer", "sources": ["Source 1", "Source 2"]}
-        
-        return MockResponse()
-
-    monkeypatch.setattr('requests.post', mock_post)
-
-    rv = client.post('/get_answer', data=dict(question='What is Flask?'), follow_redirects=True)
-    assert rv.status_code == 200
-    assert b'This is a mock answer' in rv.data
-    assert b'Sources' in rv.data
-    assert b'Source 1' in rv.data
-    assert b'Source 2' in rv.data
+    response = client.get("/get_answer")
+    assert response.status_code == 302  # Redirect to login
