@@ -2,6 +2,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
    name: vectordb 
+   annotations:
+     argocd.argoproj.io/sync-wave: "2"
+   
   
 ---
 apiVersion: v1
@@ -9,12 +12,18 @@ kind: ServiceAccount
 metadata:
     name: pgvector-sa 
     namespace:  vectordb
+    annotations:
+     argocd.argoproj.io/sync-wave: "2"
+   
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: pgvector-deployment
   namespace: vectordb
+  annotations:
+     argocd.argoproj.io/sync-wave: "2"
+   
 spec:
   replicas: 1
   selector:
@@ -44,6 +53,9 @@ kind: Service
 metadata:
   name: pgvector-svc
   namespace: vectordb
+  annotations:
+     argocd.argoproj.io/sync-wave: "2"
+   
 spec:
   selector:
     app: pgvector

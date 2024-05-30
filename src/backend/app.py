@@ -113,6 +113,10 @@ def ask_question():
             print(result["answer"])
             return jsonify({"status": 200, "answer": result["answer"]})
 
+@app.route('/health')
+def health():
+    return "I am running", 200
+
 if(__name__=="__main__"):
        app.run(port=5001,host="0.0.0.0")
 

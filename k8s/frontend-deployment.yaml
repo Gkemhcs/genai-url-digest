@@ -2,12 +2,18 @@ apiVersion: v1
 kind: Namespace
 metadata:
    name: frontend
+   annotations:
+     argocd.argoproj.io/sync-wave: "4"
+   
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: frontend-config
   namespace:  frontend
+  annotations:
+     argocd.argoproj.io/sync-wave: "4"
+   
 data:
   BACKEND_SERVER_URL: "http://backend-svc.backend:5001"
   REDIS_SERVER_URL: "10.127.96.3"
@@ -20,12 +26,18 @@ kind: ServiceAccount
 metadata:
     name: frontend-sa 
     namespace: frontend 
+    annotations:
+     argocd.argoproj.io/sync-wave: "4"
+   
 ---
 apiVersion:  apps/v1
 kind: Deployment 
 metadata:
    name: frontend 
    namespace: frontend 
+   annotations:
+     argocd.argoproj.io/sync-wave: "4"
+   
 spec:
      replicas: 1
      selector:  
@@ -47,12 +59,48 @@ spec:
                ports:
                - containerPort: 5000
                  name: web-port 
+               startupProbe:
+                  httpGet:
+                     port: 5000
+                     path : /health
+                     scheme: HTTP
+                  initialDelaySeconds: 60  
+                  timeoutSeconds: 5      
+                  periodSeconds: 20       
+                  successThreshold: 1     
+                  failureThreshold: 3 
+               readinessProbe:
+                 httpGet:
+                     port: 5000
+                     path : /health
+                     scheme: HTTP
+                 initialDelaySeconds: 60  
+                 timeoutSeconds: 5      
+                 periodSeconds: 20       
+                 successThreshold: 1     
+                 failureThreshold: 3 
+               livenessProbe:
+                 httpGet:
+                     port: 5000
+                     path : /health
+                     scheme: HTTP
+                 initialDelaySeconds: 60  
+                 timeoutSeconds: 5      
+                 periodSeconds: 20       
+                 successThreshold: 1     
+                 failureThreshold: 3 
+                  
+               
+                  
 ---
 apiVersion:  v1
 kind: Service 
 metadata:
     name: frontend-svc 
     namespace: frontend
+    annotations:
+     argocd.argoproj.io/sync-wave: "4"
+   
 spec:
     type: LoadBalancer
     selector:
