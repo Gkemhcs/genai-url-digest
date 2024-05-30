@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+   name: redis
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: redis-config
+  namespace:  redis
+stringData:
+  REDIS_AUTH: gkem1234
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+    name: redis-sa 
+    namespace: redis 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+  namespace: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:latest
+        envFrom:
+          - secretRef:
+               name:  redis-config
+        ports:
+        - containerPort: 6379
+
+---
+apiVersion:  v1
+kind: Service 
+metadata:
+    name: redis-svc 
+    namespace: redis
+spec:
+    type: ClusterIP
+    selector:
+       app: redis
+    ports:
+    - targetPort: 6379
+      port: 6379
+      name: http-port 
+    
