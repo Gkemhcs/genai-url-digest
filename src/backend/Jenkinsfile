@@ -18,8 +18,8 @@ pipeline {
                 // Checkout the repository
                 git branch: 'main', url: 'https://github.com/Gkemhcs/genai-url-digest.git'
                 sh '''
-                        git config user.email "gudikotieswarmani@gmail.com"
-                        git config user.name "Gkemhcs"
+                        git config --global user.email "gudikotieswarmani@gmail.com"
+                        git config  --global user.name "Gkemhcs"
                         git config --global --add safe.directory /var/lib/jenkins/workspace/urldigest-backend
 
                    '''
