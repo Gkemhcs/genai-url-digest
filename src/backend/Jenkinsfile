@@ -20,6 +20,8 @@ pipeline {
                 sh '''
                         git config user.email "gudikotieswarmani@gmail.com"
                         git config user.name "Gkemhcs"
+                        git config --global --add safe.directory /var/lib/jenkins/workspace/urldigest-backend
+
                    '''
             }
         }
