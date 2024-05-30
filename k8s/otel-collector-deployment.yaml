@@ -107,4 +107,7 @@ spec:
           processors: [resourcedetection,attributes,k8sattributes]
           exporters: [debug,googlecloud,zipkin]
 
-    
+
+
+
+

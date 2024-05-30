@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         DOCKER_CREDENTIALS_ID = 'docker-hub-credentials'
-        DOCKER_IMAGE = 'gkem/urldigest-backend:latest'
+        DOCKER_IMAGE = 'gkem/urldigest-backend'
         DOCKER_BUILD_CONTEXT = 'src/backend' // Specify the directory for Docker build context
     }
 
@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image using the specified directory as build context
-                    sh "docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_BUILD_CONTEXT}"
+                    sh "docker build -t ${DOCKER_IMAGE}:v${BUILD_NUMBER} ${DOCKER_BUILD_CONTEXT}"
                 }
             }
         }
@@ -35,11 +35,32 @@ pipeline {
 
                     withDockerRegistry(credentialsId: 'docker-hub-credentials') {
                        
-                         sh "docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}"
+                         sh "docker push ${DOCKER_IMAGE}:v${BUILD_NUMBER}"
                     }
                 }
             }
         }
+        stage('Update Deployment File') {
+        environment {
+            GIT_REPO_NAME = "genai-url-digest"
+            GIT_USER_NAME = "Gkemhcs"
+            DEPLOYMENT_FILE ="k8s/backend-deployment.yaml"
+        }
+        steps {
+            withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
+                sh '''
+                    git config user.email "gudikotieswarmani@gmail.com"
+                    git config user.name "Gkemhcs"
+                    BUILD_NUMBER=${BUILD_NUMBER}
+                    sed -i "s|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:v${BUILD_NUMBER}|" ${DEPLOYMENT_FILE}  
+                    git add "${DEPLOYMENT_FILE}"    
+                    cat "${DEPLOYMENT_FILE}"                                    
+                    git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+                '''
+            }
+        }
+    } 
 
         
     }
