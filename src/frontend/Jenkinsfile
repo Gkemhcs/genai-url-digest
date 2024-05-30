@@ -51,13 +51,12 @@ pipeline {
         steps {
             withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
                 sh '''
-                    git init
                     git config user.email "gudikotieswarmani@gmail.com"
                     git config user.name "Gkemhcs"
                     BUILD_NUMBER=${BUILD_NUMBER}
                     sed -i "s|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:v${BUILD_NUMBER}|" ${DEPLOYMENT_FILE}                                          
                     git add "${DEPLOYMENT_FILE}"
-                    cat "${DEPLOYMENT_FILE}"                                    
+                                            
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}"
                     git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
                 '''
