@@ -17,6 +17,10 @@ pipeline {
             steps {
                 // Checkout the repository
                 git branch: 'main', url: 'https://github.com/Gkemhcs/genai-url-digest.git'
+                sh '''
+                        git config user.email "gudikotieswarmani@gmail.com"
+                        git config user.name "Gkemhcs"
+                   '''
             }
         }
 
@@ -51,8 +55,7 @@ pipeline {
         steps {
             withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
                 sh '''
-                    git config user.email "gudikotieswarmani@gmail.com"
-                    git config user.name "Gkemhcs"
+         
                     BUILD_NUMBER=${BUILD_NUMBER}
                     sed -i "s|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:v${BUILD_NUMBER}|" ${DEPLOYMENT_FILE}                                          
                     git add "${DEPLOYMENT_FILE}"
