@@ -1,5 +1,5 @@
-# genai-url-digest
-### a simple microservice deployed in gke and implemented observability through opentelemetry and configured jenkins  and docker  for ci through ansible 
+# GENAI-URL-DIGEST💻 
+### -  A simple microservice deployed in gke and implemented observability through opentelemetry and configured jenkins  and docker  for ci through ansible 
 ### Tools Used:-
 - **Google Kubernetes Engine**: To deploy the micrsoervices and openetelemtetry deployments 
 - **OpenTelemetry**: To increase observability by implementing distributed tracing 
@@ -94,6 +94,8 @@ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 - For docker-hub-credentials  create a jenkins credentials of type user and password in such a way user contains your dockerhub userid ,password contains your dockerhub access token
 
 ###### Now push this directory to your github to configure pipelines with scm with your  github repo
+Sample pipeline screenshot
+!["jenkins pipeline"](./img/jenkins%20pipeline.png)
 
 Now create two  jenkins pipelines
 
@@ -142,4 +144,3 @@ kubectl get svc frontend -n frontend
 cd infra 
 terraform destroy
 ```
-
