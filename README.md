@@ -12,6 +12,9 @@
 - **Terraform**: to automate the infrastructure 
 
 ###  Website Images 
+##### Project Architecture
+!["Project Architecture"](./img/genai-url-digest-architecture.jpg)
+
 ##### POST url page
 !["link-upload"](./img/link-upload.png)
 
