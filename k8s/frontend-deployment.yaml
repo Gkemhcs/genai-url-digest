@@ -16,8 +16,8 @@ metadata:
    
 data:
   BACKEND_SERVER_URL: "http://backend-svc.backend:5001"
-  REDIS_SERVER_URL: "10.127.96.3"
-  REDIS_AUTH_STRING: "71ce3ff8-18e7-4226-be10-e3e859b4ad4b"
+  REDIS_SERVER_URL: "redis-svc.redis"
+  REDIS_AUTH_STRING: "gkem1234"
   OTLP_ENDPOINT: "otel-deployment-collector.collector"
 
 ---

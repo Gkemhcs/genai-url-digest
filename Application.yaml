@@ -9,7 +9,7 @@ spec:
     server: 'https://kubernetes.default.svc'
   source:
     path: k8s
-    repoURL: 'https://github.com/Gkemhcs/genai-url-digest.git'
+    repoURL: 'GITHUB_REPO_URL'
     targetRevision: main
   sources: []
   project: default

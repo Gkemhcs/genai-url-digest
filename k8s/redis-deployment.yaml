@@ -4,13 +4,15 @@ metadata:
    name: redis
 ---
 apiVersion: v1
+data:
+  redis.conf: IyByZWRpcy5jb25mCnJlcXVpcmVwYXNzIGdrZW0xMjM0Cg==
 kind: Secret
 metadata:
+ 
   name: redis-config
-  namespace:  redis
-stringData:
-  REDIS_AUTH: gkem1234
+  namespace: redis
 
+type: Opaque
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -36,11 +38,16 @@ spec:
       containers:
       - name: redis
         image: redis:latest
-        envFrom:
-          - secretRef:
-               name:  redis-config
+        command: ["redis-server","/usr/local/etc/redis/redis.conf"]
         ports:
         - containerPort: 6379
+        volumeMounts:
+          - mountPath: /usr/local/etc/redis
+            name: redis-conf
+      volumes:
+        - name: redis-conf 
+          secret:
+            secretName:  redis-config
 
 ---
 apiVersion:  v1

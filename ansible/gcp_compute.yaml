@@ -2,12 +2,11 @@ plugin: google.cloud.gcp_compute
 zones: # populate inventory with instances in these regions
   - us-central1-a
 projects:
-  -  genai-url-digest
+  -  PROJECT_ID
 filters:
   - status = RUNNING
   - scheduling.automaticRestart = true AND status = RUNNING
-  - labels.ansible=masterate
-  
+  - labels.ansible=master 
 keyed_groups:
 - prefix: gcp
   key: labels.ansible
