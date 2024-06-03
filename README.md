@@ -30,6 +30,7 @@
 
 ### Steps to deploy the project **GENAI-URL-DIGEST**
 
+**First Clone this repo to your local workstation or shell**
 **Step1: First  replace the *PROJECT_ID* WITH YOUR PROJECT_ID**
 ```bash
 export PROJECT_ID=PROJECT_ID
@@ -81,7 +82,17 @@ ssh -i ~/.ssh/gce-ssh-ansible gkemhcs@${EXTERNAL_IP}
 ##AFTER CONNECTING TO JENKINS-MASTER VM  RUN THE BELOW COMMAND to get jenkins ADMIN password
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
-**Step 8: Jenkins  Pipelines section**
+**Step 8: Updating the dockerhubusername**
+```bash
+echo "Enter your DockerHub username"
+read DOCKER_HUB_USER_NAME
+sed -i "s/DOCKER_HUB_USER_NAME/${DOCKER_HUB_USER_NAME}/"  src/frontend/Jenkinsfile
+sed -i "s/DOCKER_HUB_USER_NAME/${DOCKER_HUB_USER_NAME}/" src/backend/Jenkinsfile
+sed -i "s/DOCKER_HUB_USER_NAME/${DOCKER_HUB_USER_NAME}/" k8s/backend-deployment.yaml
+sed -i "s/DOCKER_HUB_USER_NAME/${DOCKER_HUB_USER_NAME}/" k8s/frontend-deployment.yaml
+```
+
+**Step 9: Jenkins  Pipelines section**
 
 **Now go through the url http://{EXTERNAL_IP_OF_JENKINS_VM}:8080 to access jenkins UI**
 -  If jenkins prompts you to enter password paste the above password you got by reading a file 
@@ -95,6 +106,8 @@ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 
 -  For github-token create a jenkins credentials of type secrettext and seret contains the github token you have created previously
 - For docker-hub-credentials  create a jenkins credentials of type user and password in such a way user contains your dockerhub userid ,password contains your dockerhub access token
+
+
 
 ###### Now push this directory to your github to configure pipelines with scm with your  github repo
 Sample pipeline screenshot
@@ -118,14 +131,14 @@ Now create two  jenkins pipelines
 
 **Now docker images are successfully built its time to deploy the services onto gke cluster**
 
-**Step 9: Now install argocd into gke cluster to automate the deployment of services and opentelemetry manifests**
+**Step 10: Now install argocd into gke cluster to automate the deployment of services and opentelemetry manifests**
 ```
 gcloud container clusters get-credentials cluster-us --zone us-central1-a 
 ###    Installing argocd 
 kubectl create ns argocd 
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 ```
-**Step 10: Apply Argocd Application manifest to create project**
+**Step 11: Apply Argocd Application manifest to create project**
 ###### ! Note :- Note of your GITHUB REPO URL you need to enter in below step
 
 ```bash

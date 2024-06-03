@@ -52,7 +52,7 @@ spec:
              serviceAccountName: frontend-sa
              containers:
              - name: frontend-container 
-               image: gkem/urldigest-frontend:2
+               image: DOCKER_HUB_USER_NAME/urldigest-frontend:2
                envFrom:
                 - configMapRef:
                      name: frontend-config

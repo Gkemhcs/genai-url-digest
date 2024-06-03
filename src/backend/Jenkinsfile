@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         DOCKER_CREDENTIALS_ID = 'docker-hub-credentials'
-        DOCKER_IMAGE = 'gkem/urldigest-backend'
+        DOCKER_IMAGE = 'DOCKER_HUB_USER_NAME/urldigest-backend'
         DOCKER_BUILD_CONTEXT = 'src/backend' // Specify the directory for Docker build context
     }
 

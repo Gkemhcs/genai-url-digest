@@ -53,7 +53,7 @@ spec:
              serviceAccountName: backend-sa
              containers:
              - name: backend-container 
-               image: gkem/urldigest-backend:4
+               image: DOCKER_HUB_USER_NAME/urldigest-backend:4
                ports:
                - containerPort: 5001
                  name: web-port 
