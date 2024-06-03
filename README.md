@@ -47,7 +47,7 @@ container.googleapis.com
 **Step3: Creating a  GCS_BUCKET to serve as a remote backend for terraform to store statefile**
 ```bash
 BUCKET_NAME=$PROJECT_ID+"-url-digest-tf"
-gsutil -l us-central1 $BUCKET_NAME
+gsutil -l us-central1 gs://$BUCKET_NAME
 ```
 **Step4: Generating a ssh-key to add to vm to configure the vm through Ansible**
 ```bash
@@ -63,6 +63,8 @@ export TF_VAR_PROJECT_ID=$PROJECT_ID
 export TF_VAR_SSH_USERNAME=gkemhcs
 export TF_VAR_SSH_PUBLIC_KEY_FILE=~./ssh/gce-ssh-ansible 
 sed -i "s/BUCKET_NAME/${BUCKET_NAME}/" provider.tf
+terraform plan 
+terraform apply -auto-approve
 ```
 **Now infrastructure is deployed successfully .**
 **Step 6 :Now we need to configure the vm as jenkins master node through ansible**
@@ -160,4 +162,5 @@ kubectl get svc frontend -n frontend
 ```bash
 cd infra 
 terraform destroy
+gsutil rm gs://$BUCKET_NAME
 ```
