@@ -30,8 +30,10 @@
 
 ### Steps to deploy the project **GENAI-URL-DIGEST**
 
-### Method1:- Local Deployment 
 **First Clone this repo to your local workstation or shell**
+
+### Method1:- Local Deployment 
+
 
 **Step1: First  replace the PROJECT_ID  with your PROJECT_ID**
 ```bash
