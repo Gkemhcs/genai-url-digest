@@ -1,5 +1,5 @@
 # GENAI-URL-DIGEST💻 
-### -  A simple microservice deployed in gke and implemented observability through opentelemetry and configured jenkins  and docker  for ci through ansible 
+### -  A simple  **GENAI-RAG** microservice deployed in gke and implemented observability through opentelemetry and configured jenkins  and docker  for ci through ansible 
 ### Tools Used:-
 - **Google Kubernetes Engine**: To deploy the micrsoervices and openetelemtetry deployments 
 - **OpenTelemetry**: To increase observability by implementing distributed tracing 
