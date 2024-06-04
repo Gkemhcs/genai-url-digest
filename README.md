@@ -30,7 +30,43 @@
 
 ### Steps to deploy the project **GENAI-URL-DIGEST**
 
+### Method1:- Local Deployment 
 **First Clone this repo to your local workstation or shell**
+
+**Step1: First  replace the PROJECT_ID  with your PROJECT_ID**
+```bash
+export PROJECT_ID=PROJECT_ID
+gcloud config set project $PROJECT_ID
+gcloud services enable aiplatform.googleapis.com
+```
+**Step2: Download service-account key for injecting into backend service to authenticate to Google Cloud Vertext AI**
+```bash
+gcloud iam service-accounts create aiplatform-user 
+
+gcloud projects add-iam-policy-binding $PROJECT_ID  \
+--member "serviceAccount:aiplatform-user@${PROJECT_ID}.iam.gserviceaccount.com" \
+--role roles/aiplatform.user
+
+gcloud iam service-accounts keys create key.json \
+--iam-account "aiplatform-user@${PROJECT_ID}.iam.gserviceaccount.com"
+```
+
+**Step3: Now deploy all services using docker compose file**
+```bash
+# first  build the images 
+docker compose build
+## run the services
+docker compose -d up
+```
+**Step4: To destroy the services run docker compose command**
+
+```bash
+docker compose down
+```
+
+### Method2:- Cloud deployment 
+
+
 
 **Step1: First  replace the *PROJECT_ID* WITH YOUR PROJECT_ID**
 ```bash
