@@ -13,7 +13,7 @@
 
 ###  Website Images 
 ##### Project Architecture
-!["Project Architecture"](./img/genai-url-digest-architecture.jpg)
+!["Project Architecture"](./img/genaiurldigest-architecture.jpg)
 
 ##### POST url page
 !["link-upload"](./img/link-upload.png)
