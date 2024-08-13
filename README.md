@@ -28,7 +28,7 @@
 ####  trace info
 !["trace info"](./img/sample_cloud_trace.png)
 
-###⚠️ Requirements to Deploy the Project :
+### ⚠️ Requirements to Deploy the Project :
 - **Make sure you have installed Docker and gcloud cli in your local workstation**
 - **Ensure you have an active Google Cloud Account**
 - **If not created ,create a dockerhub account to push the docker images and  note down the username and password 🔑**
