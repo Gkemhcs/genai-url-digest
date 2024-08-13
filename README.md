@@ -31,7 +31,7 @@
 ### ⚠️ Requirements to Deploy the Project :
 - **Make sure you have installed Docker and gcloud cli in your local workstation**
 - **Ensure you have an active Google Cloud Account**
-- **If not created ,create a dockerhub account to push the docker images and  note down the username and password 🔑**
+- **If not created yet,create a dockerhub account to push the docker images and  note down the username and password 🔑**
 
 
 ### Steps to deploy the project **GENAI-URL-DIGEST**
